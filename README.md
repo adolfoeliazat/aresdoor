@@ -26,6 +26,29 @@ This is part of my ares* series. I will be releasing a lot more tools designed f
 
 ***
 ### Checksums
+__How To:__
+```bash
+root@localhost$ find -type f -exec md5sum "{}" + > checklist.chk
+root@localhost$ md5sum -c checklist.chk
+./.vs/aresdoor/v15/.suo: OK
+./App.config: OK
+./aresdoor.csproj: OK
+./aresdoor.csproj.user: OK
+./aresdoor.sln: OK
+./bin/Debug/aresdoor.exe: OK
+./bin/Debug/aresdoor.exe.config: OK
+./bin/Debug/aresdoor.exe.manifest: OK
+./bin/Debug/aresdoor.pdb: OK
+./checklist.chk: FAILED
+./Program.cs: OK
+./Properties/app.manifest: OK
+./Properties/AssemblyInfo.cs: OK
+./Properties/Settings.Designer.cs: OK
+./Properties/Settings.settings: OK
+md5sum: WARNING: 1 computed checksum did NOT match
+root@localhost$
+```
+__v1.1 Checksums:__
 ```md5sum
 ccf6d865245eebed72a625aff76c81c1  ./.vs/aresdoor/v15/.suo
 ef0181de18ef3951806c0ad63b897ba4  ./App.config
