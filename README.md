@@ -8,9 +8,17 @@
  * Silent exception escapes (so no noisy dialogs)
  * Checks for internet connection before sending backdoor
  * Command line switches for defining server and port
+ * Can add self to registry for autorun on bootup
+ * Can prevent system shutdown
+ * Modify process name to "hide in plain sight" (default: System)
 
 ***
 ### Version History
+ * ### v1.2
+   - Fixed change directory bug for command line
+   - Add option to prevent shutdown (built into the code)
+   - Changed process name to "System" to help "hide in plain sight"
+   - Can now insert itself into registry to autorun on bootup (use 'setStartup' in backdoored command line)
  * ### v1.1
    - Add command line switches for modifying server and port to connect back to
    - Clean up source code for easier managment
@@ -26,43 +34,25 @@ This is part of my ares* series. I will be releasing a lot more tools designed f
 
 ***
 ### Checksums
-__How To:__
+__Check Integtrity:__
 ```bash
 root@localhost$ find -type f -exec md5sum "{}" + > checklist.chk
 root@localhost$ md5sum -c checklist.chk
-./.vs/aresdoor/v15/.suo: OK
-./App.config: OK
-./aresdoor.csproj: OK
-./aresdoor.csproj.user: OK
-./aresdoor.sln: OK
-./bin/Debug/aresdoor.exe: OK
-./bin/Debug/aresdoor.exe.config: OK
-./bin/Debug/aresdoor.exe.manifest: OK
-./bin/Debug/aresdoor.pdb: OK
-./checklist.chk: FAILED
-./Program.cs: OK
-./Properties/app.manifest: OK
-./Properties/AssemblyInfo.cs: OK
-./Properties/Settings.Designer.cs: OK
-./Properties/Settings.settings: OK
-md5sum: WARNING: 1 computed checksum did NOT match
-root@localhost$
 ```
-__v1.1 Checksums:__
+__v1.2 Checksums:__
 ```md5sum
-ccf6d865245eebed72a625aff76c81c1  ./.vs/aresdoor/v15/.suo
-ef0181de18ef3951806c0ad63b897ba4  ./App.config
-90ab17ad0203d7bca1c1d8216b8fd662  ./aresdoor.csproj
-99fae535a53b3b6af38a1bbfba426b5f  ./aresdoor.csproj.user
+939de394a0c803dd6f87ac180e03a889  ./App.config
+62bde3677da3552fd8af958d83a80ba6  ./aresdoor.csproj
+aa2a791d5c2f5e38459f048e03dbcb6a  ./aresdoor.csproj.user
 3418b51bd12d09642d641613ac7c14e4  ./aresdoor.sln
-1c853510d4570130b2240578b624ef36  ./bin/Debug/aresdoor.exe
-ef0181de18ef3951806c0ad63b897ba4  ./bin/Debug/aresdoor.exe.config
-7f5bfee348dbba74bd789ff3e45fe4f6  ./bin/Debug/aresdoor.exe.manifest
-3815883b9cce5ad82c2fa50abf3ef100  ./bin/Debug/aresdoor.pdb
-ebb7c6b6ab934f76bde47b64853c4b64  ./checklist.chk
-9104ccf4acf59244fef839b30b39e2c8  ./Program.cs
+db0de0f38cbc2e0bfe381e15469b46ce  ./bin/Debug/aresdoor.exe
+939de394a0c803dd6f87ac180e03a889  ./bin/Debug/aresdoor.exe.config
+11458a328a9c5cb3e181985046e25ddd  ./bin/Debug/aresdoor.exe.manifest
+9ab2cabb1a79c47726dd14f2e08b33e8  ./bin/Debug/aresdoor.pdb
+443d06404ddae7f934840b707ff7f1cb  ./Program.cs
 fe7e22736538240fd830f05adc29a370  ./Properties/app.manifest
-da92bb21b543ac0a30ae2b21197d0dcf  ./Properties/AssemblyInfo.cs
+d74a5577166d3a323f63d33f2f5e4108  ./Properties/AssemblyInfo.cs
 c7b12cac52b1fd145858d3b1e5f40e3a  ./Properties/Settings.Designer.cs
-853866334f6941de6f38796e3763634c  ./Properties/Settings.settings
+d1926e8ab7ed6c40b08eb40d00c6108a  ./Properties/Settings.settings
+d41d8cd98f00b204e9800998ecf8427e  ./Settings.cs
 ```
